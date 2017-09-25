@@ -212,7 +212,7 @@ process.prodJets. ak4ptCut = cms.double(20.0)
 ###############################################################################################################################
 
 process.load("SusyAnaTools.SkimsAUX.prodMET_cfi")
-process.prodMET.addcalomet = cms.bool(False)
+process.prodMET.addcalomet = cms.bool(True)
 process.prodMET.metSrc = cms.InputTag("slimmedMETs", "", process.name_())
 
 ###############################################################################################################################
@@ -293,6 +293,12 @@ process.prodJetIDEventFilter.JetSource = cms.InputTag("slimmedJets")
 process.prodJetIDEventFilter.MinJetPt  = cms.double(30.0)
 process.prodJetIDEventFilter.MaxJetEta = cms.double(999.0)
 
+
+###############################################################################################################################
+
+process.load("SusyAnaTools.SkimsAUX.ISRJetProducer_cfi")
+process.ISRJetProducer.cleanJetSrc = cms.InputTag("selectedUpdatedPatJetsDeepFlavour")
+process.load("SusyAnaTools.SkimsAUX.prodEventInfo_cfi")
 
 ###############################################################################################################################
 
@@ -440,7 +446,8 @@ if not options.isData:
 
     process.stopTreeMaker.varsDouble.extend([cms.InputTag("prodMET:genmet"), cms.InputTag("prodMET:genmetphi")])
     # Note that this default met from prodMET is both e/gamma and muon corrected which is the recommended one
-    process.stopTreeMaker.varsDouble.extend([cms.InputTag("prodMET:met"), cms.InputTag("prodMET:metphi")])
+
+process.stopTreeMaker.varsDouble.extend([cms.InputTag("prodMET", "met"), cms.InputTag("prodMET", "metphi")])
 
 
 process.stopTreeMaker.varsInt.append(cms.InputTag("prodMuons", "nMuons"))
@@ -496,6 +503,16 @@ process.stopTreeMaker.varsBoolNamesInTree.append("HBHENoiseFilterResultProducer:
 
 process.stopTreeMaker.varsBool.append(cms.InputTag("HBHENoiseFilterResultProducer", "HBHEIsoNoiseFilterResult"))
 process.stopTreeMaker.varsBoolNamesInTree.append("HBHENoiseFilterResultProducer:HBHEIsoNoiseFilterResult|HBHEIsoNoiseFilter")
+
+process.stopTreeMaker.varsDouble.extend([cms.InputTag("prodMET:calomet"), cms.InputTag("prodMET:calometphi")])
+
+if not options.isData:
+   #isrJets
+   process.stopTreeMaker.varsInt.append(cms.InputTag("ISRJetProducer", "NJetsISR"))
+
+process.stopTreeMaker.varsInt.extend([cms.InputTag("prodEventInfo:vtxSize"), cms.InputTag("prodEventInfo:npv"), cms.InputTag("prodEventInfo:nm1"), cms.InputTag("prodEventInfo:n0"), cms.InputTag("prodEventInfo:np1")])
+process.stopTreeMaker.varsDouble.extend([cms.InputTag("prodEventInfo:trunpv"), cms.InputTag("prodEventInfo:avgnpv"), cms.InputTag("prodEventInfo:storedWeight")])
+process.stopTreeMaker.varsDoubleNamesInTree.extend(["prodEventInfo:trunpv|tru_npv", "prodEventInfo:avgnpv|avg_npv", "prodEventInfo:storedWeight|stored_weight"])
 
 
 ###############################################################################################################################
